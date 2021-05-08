@@ -20,11 +20,12 @@ def publisher_thread_task(client: mqtt.Client, client_lock: threading.Lock, msg:
 
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client: mqtt.Client, userdata: Any, flags: Dict[str, int], rc: int):
+def on_connect(client: mqtt.Client, userdata: Dict[str, Any], flags: Dict[str, int], rc: int):
     print("Connected with result code " + str(rc))
     client_lock: threading.Lock = userdata["client_lock"]
-    userdata["is_connected"] = True
-    client_lock.release()
+    if not userdata["is_connected"]:
+        client_lock.release()
+        userdata["is_connected"] = True
 
 
 def on_disconnect(client: mqtt.Client, userdata: Dict[str, Any], rc: int):
